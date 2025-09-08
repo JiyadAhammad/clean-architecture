@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,11 +12,11 @@ part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  @override
-  void onChange(Change<AuthState> change) {
-    log('Auth Bloc state changes => $change ');
-    super.onChange(change);
-  }
+  // @override
+  // void onChange(Change<AuthState> change) {
+  //   log('Auth Bloc state changes => $change ');
+  //   super.onChange(change);
+  // }
 
   final UserSignUp _userSignUp;
   final UserSignin _userSignin;
