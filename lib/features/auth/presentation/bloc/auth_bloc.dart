@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:clean_architucture/core/usecase/usecase.dart';
+import 'package:clean_architucture/features/auth/domain/usecases/current_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,12 +23,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   final UserSignUp _userSignUp;
   final UserSignin _userSignin;
-  AuthBloc({required UserSignUp userSignUp, required UserSignin userSignin})
-    : _userSignUp = userSignUp,
-      _userSignin = userSignin,
-      super(AuthInitial()) {
+  final CurrentUser _currentUser;
+  AuthBloc({
+    required UserSignUp userSignUp,
+    required UserSignin userSignin,
+    required CurrentUser currentUser,
+  }) : _userSignUp = userSignUp,
+       _userSignin = userSignin,
+       _currentUser = currentUser,
+       super(AuthInitial()) {
     on<AuthSignup>(_authSignup);
     on<AuthSignin>(_authSignin);
+    on<AuthIsUserLoggedIn>(_authIsUserLoggedIn);
   }
 
   Future<void> _authSignup(AuthSignup event, Emitter<AuthState> emit) async {
@@ -54,5 +63,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (Failures failure) => emit(AuthFailure(failure.message)),
       (Profile user) => emit(AuthSuccess(user)),
     );
+  }
+
+  Future<void> _authIsUserLoggedIn(
+    AuthIsUserLoggedIn event,
+    Emitter<AuthState> emit,
+  ) async {
+    log('Function called');
+    final res = await _currentUser(NoParams());
+    res.fold((Failures failure) => emit(AuthFailure(failure.message)), (
+      Profile user,
+    ) {
+      log('$user. user ');
+      emit(AuthSuccess(user));
+    });
   }
 }

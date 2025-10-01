@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:fpdart/fpdart.dart';
@@ -20,7 +21,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     return _getUser(
       fn: () async =>
-          _remoteDataSource.signInUser(email: email, password: password),
+          await _remoteDataSource.signInUser(email: email, password: password),
     );
   }
 
@@ -31,12 +32,30 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     return _getUser(
-      fn: () async => _remoteDataSource.signUpUser(
+      fn: () async => await _remoteDataSource.signUpUser(
         name: name,
         email: email,
         password: password,
       ),
     );
+  }
+
+  @override
+  Future<Either<Failures, Profile>> currentUser() async {
+    try {
+      log('data repo impl');
+      final user = await _remoteDataSource.getCurrentUserData();
+
+      if (user == null) {
+        return left(Failures(message: 'User not logged in'));
+      }
+
+      return right(user);
+    } on SocketException catch (e) {
+      return left(Failures(message: e.message));
+    } on ServerException catch (e) {
+      return left(Failures(message: e.message));
+    }
   }
 
   Future<Either<Failures, Profile>> _getUser({

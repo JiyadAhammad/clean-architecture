@@ -5,3 +5,5 @@ import '../error/failures.dart';
 abstract interface class UseCase<SuccessType, Params> {
   Future<Either<Failures, SuccessType>> call(Params param);
 }
+
+class NoParams {}

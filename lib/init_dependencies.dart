@@ -1,3 +1,4 @@
+import 'package:clean_architucture/features/auth/domain/usecases/current_user.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -23,13 +24,19 @@ Future<void> configureInjection() async {
 }
 
 void _initAuth() {
-  getIt.registerFactory<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(getIt()),
-  );
-  getIt.registerFactory<AuthRepository>(() => AuthRepositoryImpl(getIt()));
-  getIt.registerFactory(() => UserSignUp(getIt()));
-  getIt.registerFactory(() => UserSignin(getIt()));
-  getIt.registerLazySingleton<AuthBloc>(
-    () => AuthBloc(userSignUp: getIt(), userSignin: getIt()),
-  );
+  getIt
+    ..registerFactory<AuthRemoteDataSource>(
+      () => AuthRemoteDataSourceImpl(getIt()),
+    )
+    ..registerFactory<AuthRepository>(() => AuthRepositoryImpl(getIt()))
+    ..registerFactory(() => UserSignUp(getIt()))
+    ..registerFactory(() => UserSignin(getIt()))
+    ..registerFactory(() => CurrentUser(getIt()))
+    ..registerLazySingleton<AuthBloc>(
+      () => AuthBloc(
+        userSignUp: getIt(),
+        userSignin: getIt(),
+        currentUser: getIt(),
+      ),
+    );
 }
